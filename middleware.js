@@ -8,7 +8,7 @@ export function middleware(request) {
     return NextResponse.next()
   }
 
-  if (hostname === 'app.vochly.com') {
+  if (hostname === 'app.vochly.app') {
     if (pathname === '/') {
       const token = request.cookies.get('voc_token')?.value
       if (token) {
@@ -20,11 +20,11 @@ export function middleware(request) {
     return NextResponse.next()
   }
 
-  if (hostname === 'vochly.com' || hostname === 'www.vochly.com') {
+  if (hostname === 'vochly.app' || hostname === 'www.vochly.app') {
     if (pathname.startsWith('/dashboard') || pathname.startsWith('/billing') ||
         pathname.startsWith('/generate') || pathname.startsWith('/login') ||
         pathname.startsWith('/signup')) {
-      return NextResponse.redirect(new URL('https://app.vochly.com' + pathname, request.url))
+      return NextResponse.redirect(new URL('https://app.vochly.app' + pathname, request.url))
     }
   }
 
