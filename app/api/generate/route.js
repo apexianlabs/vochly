@@ -8,7 +8,7 @@ const DB_API_KEY = process.env.DB_API_KEY_VOCHLY
 export async function POST(request) {
   try {
     const body = await request.json()
-    const { userId, ...inputs } = body
+    const { userId, client_name, client_company, client_role, raw_feedback, service } = body
 
     // Call AI API
     const aiRes = await fetch(`${AI_API_URL}/api/process`, {
