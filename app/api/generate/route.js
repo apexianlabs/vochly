@@ -1,29 +1,40 @@
 import { NextResponse } from 'next/server'
+
+const AI_API_URL = process.env.AI_API_URL
+const AI_API_KEY = process.env.AI_API_KEY
+const DB_API_URL = process.env.DB_API_URL
+const DB_API_KEY = process.env.DB_API_KEY_VOCHLY
+
 export async function POST(request) {
   try {
     const body = await request.json()
-    const { client_name, client_company, client_role, raw_feedback, service, userId } = body
-    if (!client_name || !raw_feedback) return NextResponse.json({ error: 'Required fields missing' }, { status: 400 })
-    const aiRes = await fetch(`${process.env.AI_API_URL}/api/process`, {
+    const { userId, ...inputs } = body
+
+    // Call AI API
+    const aiRes = await fetch(`${AI_API_URL}/api/process`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${process.env.AI_API_KEY}` },
-      body: JSON.stringify({ task: 'format_testimonial', inputs: { client_name, client_company: client_company||'', client_role: client_role||'Client', raw_feedback, service: service||'our services' } })
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${AI_API_KEY}` },
+      body: JSON.stringify({ task: 'format_testimonial', inputs })
     })
     const aiData = await aiRes.json()
-    if (!aiRes.ok) throw new Error(aiData.error || 'AI failed')
+    if (!aiRes.ok) throw new Error(aiData.error || 'AI generation failed')
+
     const result = aiData.data
+
+    // Save to DB
     let itemId = null
-    if (userId && process.env.DB_API_URL) {
+    if (userId && DB_API_URL) {
       try {
-        const dbRes = await fetch(`${process.env.DB_API_URL}/db/vochly/testimonials`, {
+        const dbRes = await fetch(`${DB_API_URL}/db/vochly/testimonials`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${process.env.DB_API_KEY_VOCHLY}` },
-          body: JSON.stringify({ user_id: userId, title: `${client_name}${client_company?' — '+client_company:''}`, client_name, client_company, result_data: result, status: 'complete' })
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${DB_API_KEY}` },
+          body: JSON.stringify({ user_id: userId, result_data: result, status: 'complete', ...inputs })
         })
         const dbData = await dbRes.json()
         itemId = dbData.data?.id || null
-      } catch(e) {}
+      } catch(e) { console.error('DB save failed:', e.message) }
     }
+
     return NextResponse.json({ itemId, result })
   } catch(err) {
     return NextResponse.json({ error: err.message }, { status: 500 })
