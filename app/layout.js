@@ -1,6 +1,6 @@
 export const metadata = {
-  title: 'Vochly — Turn raw feedback into polished testimonials',
-  description: 'Turn raw feedback into polished testimonials',
+  title: 'Vochly — Paste raw client feedback and get a professional, publish-ready testimonial in 30 seconds.',
+  description: 'Paste raw client feedback and get a professional, publish-ready testimonial in 30 seconds.',
 }
 export default function RootLayout({ children }) {
   return (
