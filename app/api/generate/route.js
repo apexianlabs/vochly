@@ -14,7 +14,7 @@ export async function POST(request) {
     const aiRes = await fetch(`${AI_API_URL}/api/process`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${AI_API_KEY}` },
-      body: JSON.stringify({ task: 'format_testimonial', inputs })
+      body: JSON.stringify({ task: 'format_testimonial', inputs: { client_name, client_company: client_company||'', client_role: client_role||'Client', raw_feedback, service: service||'our services' } })
     })
     const aiData = await aiRes.json()
     if (!aiRes.ok) throw new Error(aiData.error || 'AI generation failed')
