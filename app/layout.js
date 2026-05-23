@@ -1,4 +1,5 @@
 export const metadata = {
+  icons: { icon: "/favicon.svg", shortcut: "/favicon.svg" },
   title: 'Vochly — Paste raw client feedback and get a professional, publish-ready testimonial in 30 seconds.',
   description: 'Paste raw client feedback and get a professional, publish-ready testimonial in 30 seconds.',
 }
